@@ -1,0 +1,785 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>정규표현식(regular expression) </title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="d545c10d-6218-4e52-92ca-d8a12955a670" class="page mono"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/woodcuts_1.jpg" style="object-position:center 75.07000000000001%"/><div class="page-header-icon page-header-icon-with-cover"><span class="icon">🎱</span></div><h1 class="page-title">정규표현식(regular expression) </h1></header><div class="page-body"><p id="77e013f5-3c12-4a8f-a4d8-13438a727081" class="">
+</p><p id="7f91b653-7d19-435a-b088-0943fdcb8040" class="">SOUL-G and Children 6/10~6/27</p><p id="509bcd27-93fa-49da-a1d5-f133ac7c05c4" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="514dde7e-2a4b-45d0-a8f3-25af4698e9fb"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><strong><mark class="highlight-gray"><em>[왜 정규표현식(이하 정규식)을 선택했나?]</em></mark></strong><mark class="highlight-gray"><em>
+정규식은 언어를 넘어 다양한 시스템과 운영체제에서 사용할 수 있어 한번 제대로 배워둔다면 다방면에서 활용할 수 있다는 장점이 있다</em></mark></div></figure><p id="7366869e-5466-4de8-ab13-19c9a78a21dc" class="">
+</p><h3 id="d823739b-a9c1-4d41-87ed-0f31a5f26010" class=""><strong>[정규식이란 무엇인가?]</strong></h3><p id="91f23a98-7633-4c9b-a633-44417137770d" class=""><strong><mark class="highlight-yellow_background">정규식은 언어다!</mark></strong></p><p id="2e7f1d49-abc0-46c9-9adb-62a959c144b7" class="">특정한 규칙을 가진 문자열의 집합을 사용하는데 표현하는 형식언어</p><p id="8fdc3fd8-f461-4671-9dd4-d4c57baec87d" class="">
+</p><h3 id="72fe4e02-5b04-4680-8893-f876abc3601f" class="">[정규식 활용]</h3><ul id="9034935d-5f61-4fbd-97e1-87bf72774b04" class="bulleted-list"><li style="list-style-type:disc"><strong>패턴 검사</strong>: 패턴과 부합하는지 여부 검증 - 이메일 검사
+<mark class="highlight-yellow_background">Pattern.matches(&quot;^[a-zA-Z0-9_!#$%&amp;&#x27;*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$&quot;, inputStr);</mark></li></ul><ul id="aa27746a-e317-4e18-8cc4-45196c415c59" class="bulleted-list"><li style="list-style-type:disc"><strong>패턴 추출</strong>: 패턴과 부합하는 문자열 토큰 추출 - 데이터 파싱<p id="79b4be0c-1207-446a-a8f4-e6327d384cb2" class=""><mark class="highlight-yellow_background">Pattern p = Pattern.compile(regex);
+Matcher m = p.matcher(input);</mark></p><p id="52b71db1-7353-44ac-9c7c-89075d7a6492" class=""><mark class="highlight-yellow_background"><strong>return </strong></mark><mark class="highlight-yellow_background">m.matches();</mark></p></li></ul><ul id="6e455785-c59b-41bd-b126-b389f5479f9c" class="bulleted-list"><li style="list-style-type:disc"><strong>패턴 치환</strong>: 패턴과 부합하는 문자열 토큰 치환 - replace
+<mark class="highlight-yellow_background">Pattern.compile(regex).matcher(</mark><mark class="highlight-yellow_background"><strong>this</strong></mark><mark class="highlight-yellow_background">).replaceAll(replacement);</mark></li></ul><p id="67ed0733-9567-4db8-a0d2-edb3e491c2eb" class="">
+</p><h3 id="b9fc22d8-6c74-4d24-ad33-7048931ba436" class="">예시</h3><ul id="08c17f67-9721-48ab-85c8-8106cd4807c8" class="bulleted-list"><li style="list-style-type:disc"><strong>사용자 입력 유효성 검증</strong>: 이메일 주소, URL, 전화번호, 주민등록번호</li></ul><ul id="b902929d-f9d4-4c6d-9e3c-819d67a634c5" class="bulleted-list"><li style="list-style-type:disc"><strong>패턴에 기반한 감지 및 치환</strong>: SQL Injection 탐지, HTML 태그 및 (악성)스크립트 제거</li></ul><p id="b4b554d6-5b22-4a39-821d-79322affd789" class="">
+</p><p id="9a39cfff-e2db-4e95-981e-bd5e7e59f971" class="">알파벳 검증</p><pre id="ce6f5eac-87fd-4514-a14d-51aafb03329f" class="code"><code>public static boolean IsAlpha(String inputStr){
+        for(int i=0; i&lt;inputStr.length();i++){
+            if(!(inputStr.charAt(i)&gt;=&#x27;A&#x27;&amp;&amp;inputStr.charAt(i)&lt;=&#x27;Z&#x27;)||(inputStr.charAt(i)&gt;=&#x27;a&#x27;&amp;&amp;inputStr.charAt(i)&lt;=&#x27;z&#x27;)){
+                return false;
+            }
+        }
+        return true;
+    }</code></pre><pre id="056c446b-f2c6-4ea2-bff2-8394e61d5a47" class="code"><code>public static boolean IsAlphaRegex(String inputStr){
+        return Pattern.matches(&quot;^[a-zA-Z]*$&quot;,inputStr);
+    }
+}</code></pre><p id="aec2354b-07cd-4ea5-8c01-5599555a7f45" class="">
+</p><p id="add61caf-a690-4abd-a880-d143410b8cb1" class="">이메일 검증</p><pre id="cfdf8210-3cb4-4098-aade-2ecb99d3fa31" class="code"><code>public static boolean IsValidEmailAddress(String inputStr) {
+        if ((inputStr.indexOf(&quot;@&quot;) != -1) &amp;&amp; (inputStr.indexOf(&quot;.&quot;) != -1)) {
+            String[] temp = inputStr.split(&quot;@&quot;);
+            if (temp[0] != null) {
+                //대충 @ 이전 문자열이 맞는 문자열인지 확인하는 코드
+            }else return false;
+            if(temp[1] != null){
+                //대충 @ 이후 문자열이 맞는 문자열인지 확인하는 코드
+            }
+        }
+
+        return false;
+    }</code></pre><pre id="898ae284-5b90-430a-b181-9db92f805f10" class="code"><code>public static boolean IsValidEmailAddressRegex(String inputStr)
+    {
+        return Pattern.matches(&quot;^[a-zA-Z0-9_!#$%&amp;&#x27;*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$&quot;, inputStr);
+    }</code></pre><p id="834bbdba-848b-4a93-8f06-2a094ee76865" class="">
+</p><h3 id="28c0585c-9147-4a79-8dde-d1a34d111571" class=""><strong>1. 매칭될 문자를 지정하거나, 제외하는 방법입니다.</strong></h3><table id="6f93c55a-c8c7-4ae7-ad77-3a051143d073" class="simple-table"><thead class="simple-table-header"><tr id="e4ae9732-22a9-4b63-bb24-e87909f259aa"><th id="jdVs" class="simple-table-header-color simple-table-header" style="width:349px">정규식</th><th id="Be=v" class="simple-table-header-color simple-table-header" style="width:349px">설명</th></tr></thead><tbody><tr id="4d6330c2-99b8-4e11-ad2b-d5db8f1b32d5"><td id="jdVs" class="" style="width:349px">[abc]</td><td id="Be=v" class="" style="width:349px">a, b, c중 하나이면 일치 합니다.</td></tr><tr id="8d0b52c0-4ea9-4fcd-9dc2-d37972ddad9a"><td id="jdVs" class="" style="width:349px">[^abc]</td><td id="Be=v" class="" style="width:349px">a, b, c를 제외한 다른 글자 이면 일치합니다.</td></tr><tr id="b50b3a4f-7919-4b9e-bf5e-7dfb4e271151"><td id="jdVs" class="" style="width:349px">[a-zA-Z]</td><td id="Be=v" class="" style="width:349px">a 부터 z까지의 소문자 알파벳 이거나 A 부터 Z까지의 대문자 알파벳 중의 하나라면 일치합니다.(범위)</td></tr><tr id="15f5ba15-a48c-4cf2-8ace-c66890bde58d"><td id="jdVs" class="" style="width:349px">[a-d[m-p]]</td><td id="Be=v" class="" style="width:349px">a 부터 d까지, 또는 m 부터 p까지 중에 하나와 일치합니다: [a-dm-p] (합집합)</td></tr><tr id="2e12fada-0608-4c35-8500-ecc3c079c899"><td id="jdVs" class="" style="width:349px">[a-z&amp;&amp;[def]]</td><td id="Be=v" class="" style="width:349px">d, e, f 중의 하나와 일치합니다. (교집합)</td></tr><tr id="66ebeb14-ed57-4336-b64d-6181b14fbdd8"><td id="jdVs" class="" style="width:349px">[a-z&amp;&amp;[^bc]]</td><td id="Be=v" class="" style="width:349px">b와 c를 제외한 a 부터 z까지 중의 하나와 일치합니다: [ad-z] (차집합)</td></tr><tr id="11d3e6e7-033f-40c0-aea5-1e8f0902a8ec"><td id="jdVs" class="" style="width:349px">[a-z&amp;&amp;[^m-p]]</td><td id="Be=v" class="" style="width:349px">m부터 p 까지를 제외한, a 부터 z까지 중의 하나와 일치합니다: [a-lq-z] (차집합)</td></tr></tbody></table><p id="c7b7b036-8307-4b0c-9f71-c081aa4457b6" class="">
+</p><h3 id="e6002e88-f78b-4cd9-8416-5a32ef61a0a9" class=""><strong>2. 미리 정의된 문자를 지정하는 방법입니다.</strong></h3><table id="e5e9af8b-b4fb-4226-a7e9-a260dfcea13d" class="simple-table"><thead class="simple-table-header"><tr id="668dd2f8-0e7d-464a-9985-48a93eb046b8"><th id="Yjt`" class="simple-table-header-color simple-table-header" style="width:349px">정규식</th><th id="^PPZ" class="simple-table-header-color simple-table-header" style="width:349px">설명</th></tr></thead><tbody><tr id="dcab1234-f500-4b46-8a7d-b8a68a74edf6"><td id="Yjt`" class="" style="width:349px">.</td><td id="^PPZ" class="" style="width:349px">임의의 문자 (라인 종결자와 일치할 수도 하지 않을 수도 있음)</td></tr><tr id="3ee1e821-83e6-49de-9fb9-ff81096945bc"><td id="Yjt`" class="" style="width:349px">\d</td><td id="^PPZ" class="" style="width:349px">숫자 문자: [0-9]</td></tr><tr id="e7a982f0-f55a-4c42-9118-d1b17802c38f"><td id="Yjt`" class="" style="width:349px">\D</td><td id="^PPZ" class="" style="width:349px">숫자 문자가 아닌것: [^0-9]</td></tr><tr id="73a8850e-1251-4f12-9a49-d10fbc429d57"><td id="Yjt`" class="" style="width:349px">\s</td><td id="^PPZ" class="" style="width:349px">화이트 스페이스 문자: [ \t\n\x0B\f\r]</td></tr><tr id="1e526fa9-d5b7-4dc5-bb7c-49ceabf42a42"><td id="Yjt`" class="" style="width:349px">\S</td><td id="^PPZ" class="" style="width:349px">화이트 스페이스 문자가 아닌것: [^\s]</td></tr><tr id="7a73657a-0c6b-47e2-9cae-cc8844045733"><td id="Yjt`" class="" style="width:349px">\w</td><td id="^PPZ" class="" style="width:349px">알파벳 단어 문자(word 문자): [a-zA-Z_0-9]</td></tr><tr id="ff84057d-d3a6-4b74-8fab-b2ba4d3b7c7c"><td id="Yjt`" class="" style="width:349px">\W</td><td id="^PPZ" class="" style="width:349px">알파벳 단어 문자가 아닌것: [^\w]</td></tr></tbody></table><h3 id="ca1dfbd0-60a9-46bc-8ebb-d34af5344e74" class=""><strong>3. 수량 매칭</strong></h3><table id="c87193d4-585b-4102-8b16-fd8c6691e936" class="simple-table"><thead class="simple-table-header"><tr id="51d30be7-32eb-4f72-ae4e-94e132bebe2c"><th id="h_lc" class="simple-table-header-color simple-table-header" style="width:174.5px">Greedy</th><th id="riGS" class="simple-table-header-color simple-table-header" style="width:174.5px">Reluctant</th><th id="[;]p" class="simple-table-header-color simple-table-header" style="width:174.5px">Possessive</th><th id="t|bj" class="simple-table-header-color simple-table-header" style="width:174.5px">의미</th></tr></thead><tbody><tr id="a9247546-d870-43bd-b2aa-cc3123d9ab99"><td id="h_lc" class="" style="width:174.5px">X?</td><td id="riGS" class="" style="width:174.5px">X??</td><td id="[;]p" class="" style="width:174.5px">X?+</td><td id="t|bj" class="" style="width:174.5px">X가 없거나 한번 나옴</td></tr><tr id="e4116688-d265-4039-9ad7-616bb88bf0e6"><td id="h_lc" class="" style="width:174.5px">X*</td><td id="riGS" class="" style="width:174.5px">X*?</td><td id="[;]p" class="" style="width:174.5px">X*+</td><td id="t|bj" class="" style="width:174.5px">X가 없거나 한번 이상 나옴</td></tr><tr id="215cacb8-2819-47fe-95fb-987b7b478eeb"><td id="h_lc" class="" style="width:174.5px">X+</td><td id="riGS" class="" style="width:174.5px">X+?</td><td id="[;]p" class="" style="width:174.5px">X++</td><td id="t|bj" class="" style="width:174.5px">X가 한번 또는 여러번 나옴</td></tr><tr id="78c5bd54-8049-4ce1-92ba-f1dc7b1561f0"><td id="h_lc" class="" style="width:174.5px">X{n}</td><td id="riGS" class="" style="width:174.5px">X{n}?</td><td id="[;]p" class="" style="width:174.5px">X{n}+</td><td id="t|bj" class="" style="width:174.5px">X가 정확히 n번 나옴</td></tr><tr id="a485b4e7-d20c-4b79-a371-846896515edb"><td id="h_lc" class="" style="width:174.5px">X{n,}</td><td id="riGS" class="" style="width:174.5px">X{n,}?</td><td id="[;]p" class="" style="width:174.5px">X{n,}+</td><td id="t|bj" class="" style="width:174.5px">X가 n번 이상 나옴</td></tr><tr id="17a0fba6-2ed8-484f-bd40-7068e412b75a"><td id="h_lc" class="" style="width:174.5px">X{n,m}</td><td id="riGS" class="" style="width:174.5px">X{n,m}?</td><td id="[;]p" class="" style="width:174.5px">X{n,m}+</td><td id="t|bj" class="" style="width:174.5px">X가 n이상 m이하로 나옴</td></tr></tbody></table><p id="8bcfe7a7-e8f0-4ffa-8bf1-99f96d1281df" class="">패턴이 나오는 횟수를 지정할 수 있습니다.</p><pre id="4290bc97-e061-4c3d-9ad5-06568d96f570" class="code code-wrap"><code>-Greedy : 매칭을 위해서 입력된 문자열 전체를 읽어서 확인하고 뒤에서 한자씩 빼면서 끝까지 확인합니다.
+Reluctant : 입력된 문자열에서 한글자씩 확인해 나갑니다. 마지막에 확인하는 것은 전체 문자열 입니다.
+Possessive : 입력된 전체 문자열을 확인합니다. Greedy와 달리 뒤에서 빼면서 확인하지 않습니다.(geedy와 비슷하지만 Backtraking 진행하지 않는다.)</code></pre><h3 id="4cfe3dc3-0f0f-40ab-994e-bdba3bc431e4" class="">4. 정규식 그룹 캡쳐</h3><pre id="c8590937-9c83-49bd-95cf-8e3c0b531ec7" class="code code-wrap"><code>
+Pattern API에 설명된 대로, 그룹 캡쳐는 열린 괄호를 왼쪽에서 오른쪽으로 세어서 숫자를 붙입니다. 예로, 표현식 ((A)(B(C))) 는 다음과 같은 네 개의 그룹이 있습니다.
+1: ((A)(B(C)))
+2: (A)
+3: (B(C))
+4: (C)
+이 그룹 번호는 역참조로 그룹에 접근하는데 사용될 수 있습니다.</code></pre><h3 id="c85366eb-9a2d-4a45-ab6b-cec4dd17caf6" class=""><strong>5. 그룹 역참조</strong></h3><pre id="1e680599-1641-441c-9d3f-5ddef3e7e477" class="code code-wrap"><code>문자열내에서 중복된 알파벳으로된 단어를 찾습니다. \\1 로 번호가 붙은 부분이 1번 그룹을 역참조하는 부분입니다.</code></pre><p id="0f9e6158-a395-42fa-8330-ce1b47e5fbe7" class="">
+</p><h3 id="1e8156c3-192f-4dc1-91a6-1565687117ae" class=""><strong>6. 경계조건 판별 조건</strong></h3><table id="31a05666-0808-472d-be71-fd168df9644c" class="simple-table"><thead class="simple-table-header"><tr id="66bc92db-3ac1-4d4c-85ac-72bc2d1a36a7"><th id="f&gt;Qw" class="simple-table-header-color simple-table-header" style="width:348.99993896484375px">정규식</th><th id="gqya" class="simple-table-header-color simple-table-header" style="width:348.99993896484375px">설명</th></tr></thead><tbody><tr id="9471a002-69a8-454f-aa48-39d4d09c5afa"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">^</td><td id="gqya" class="" style="width:348.99993896484375px">행의 시작</td></tr><tr id="6011fefe-2989-4daf-bf25-4ba50c24a710"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">$</td><td id="gqya" class="" style="width:348.99993896484375px">행의 끝</td></tr><tr id="8e3d3ba3-5aca-4f68-b295-1698d4896c73"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">\b</td><td id="gqya" class="" style="width:348.99993896484375px">단어 경계</td></tr><tr id="ee01276d-ccb2-4355-9a85-135cc497a10d"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">\B</td><td id="gqya" class="" style="width:348.99993896484375px">단어가 아닌것의 경계</td></tr><tr id="9f224f24-e120-4ea8-8f6d-5112a6914126"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">\A</td><td id="gqya" class="" style="width:348.99993896484375px">입력의 시작 부분</td></tr><tr id="a6163571-4423-45a4-bbab-1236d7783dfa"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">\G</td><td id="gqya" class="" style="width:348.99993896484375px">이전 매치의 끝</td></tr><tr id="adcd5abe-bf34-4c70-bbd1-22542a1adef8"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">\Z</td><td id="gqya" class="" style="width:348.99993896484375px">입력의 끝이지만 종결자가 있는 경우</td></tr><tr id="768daeac-04c4-4704-a281-7c760c5ac70c"><td id="f&gt;Qw" class="" style="width:348.99993896484375px">\z</td><td id="gqya" class="" style="width:348.99993896484375px">입력의 끝</td></tr></tbody></table><p id="93684df0-0c95-4061-ac7d-570482a3ace0" class="">행의 시작 끝, 단어 경계 등을 판별합니다.</p><p id="5cf60cdc-81e5-4244-80a6-50d03c2f6689" class="">
+</p><h3 id="ab597341-847d-477a-8688-526db3cfb3c4" class=""><strong>7. 패턴 매칭에서 플래그 사용</strong></h3><p id="c57cecfa-1174-403b-be8b-93053a55c4ee" class="">
+</p><table id="e704fd2f-5b52-412c-9678-3a05edc6dd6e" class="simple-table"><thead class="simple-table-header"><tr id="a8cdfd40-e653-4b14-8d67-e92f81bd86b6"><th id="Z;A}" class="simple-table-header-color simple-table-header" style="width:232.6666259765625px">플래그</th><th id="TvmG" class="simple-table-header-color simple-table-header" style="width:232.6666259765625px">동등한 내장 표현</th><th id="U&gt;Pe" class="simple-table-header-color simple-table-header" style="width:232.6666259765625px">설명</th></tr></thead><tbody><tr id="ea639b62-8474-4f0b-89f5-f1311f8282ad"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.CANON_EQ</td><td id="TvmG" class="" style="width:232.6666259765625px">None</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">표준화된 매칭 모드를 활성화합니다. 이 모드가 켜지면 a를 나타내는 유니코드 &quot;\u00E5&quot;와 a와 상단고리 유니코드를 쓴 &quot;a\u030A&quot;를 같다고 매칭합니다.</td></tr><tr id="61937623-df3a-44e7-a800-4ed75c68ef57"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.CASE_INSENSITIVE</td><td id="TvmG" class="" style="width:232.6666259765625px">(?i)</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">대소문자를 구분하지 않습니다.</td></tr><tr id="de18ef87-6fc4-4877-a7ee-0b0b6086480d"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.COMMENTS</td><td id="TvmG" class="" style="width:232.6666259765625px">(?x)</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">공백과 주석이 무시됩니다. 주석은 #부터 그 행 끝까지 입니다.</td></tr><tr id="f3f9ba2a-df1f-43fe-895a-70f5864477ff"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.MULTILINE</td><td id="TvmG" class="" style="width:232.6666259765625px">(?m)</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">다중행 모드를 사용여 모든 ^와 $가 인식됩니다. 기본값은 입력값 전체를 하나의 시작과 끝으로 인식합니다.</td></tr><tr id="63972c46-bda4-4597-a949-df5a20d6eb18"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.DOTALL</td><td id="TvmG" class="" style="width:232.6666259765625px">(?s)</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">.가 개행문자 까지 포함하는 모든 문자로 매칭됩니다.</td></tr><tr id="4fcf11bf-14cc-4d69-9d3b-1d65ece625bf"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.LITERAL</td><td id="TvmG" class="" style="width:232.6666259765625px">None</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">입력의 메타문자와 이스케이프된 문자를 일반 문자로 취급합니다. CASE_INSENSITIVE와 UNICODE_CASE는 기능이 유지됩니다.</td></tr><tr id="4e2a9c61-ce76-4fae-8895-91d45c8853d6"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.UNICODE_CASE</td><td id="TvmG" class="" style="width:232.6666259765625px">(?u)</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">이 모드가 활성화 되면 대소문자 매칭이 유니코드 표준을 따릅니다. 기본은 US-ASCII 문자 집합을 따릅니다.</td></tr><tr id="dfe55478-dd80-4c37-8cf8-a7a422a3d1b4"><td id="Z;A}" class="" style="width:232.6666259765625px">Pattern.UNIX_LINES</td><td id="TvmG" class="" style="width:232.6666259765625px">(?d)</td><td id="U&gt;Pe" class="" style="width:232.6666259765625px">^와 $를 처리시 UNIX 개행을 사용합니다.</td></tr></tbody></table><p id="e5e0bc38-b714-4895-838b-6cbf2b494ede" class="">패턴이 매치되는 방법에 영향을 미치는 플래그를 제공합니다</p><p id="3e3dc313-969a-400a-8469-eddd269422e4" class="">여러개의 플래그를 사용할 때는 | 연산자로 연결합니다.</p><p id="2ec37b5a-cc6c-4976-8479-8ad9ea25224d" class="">
+</p><p id="542a00e8-b9aa-4763-9cb0-814665193bc8" class="">
+</p><p id="bfa58604-7387-499b-b879-6c1c7807f0d8" class="">자주 사용하는 표현</p><table id="b8c52544-c3fb-4663-91cb-58df5f33563f" class="simple-table"><thead class="simple-table-header"><tr id="254cb11e-bec0-47fe-8df3-112e1957554d"><th id="kcW?" class="simple-table-header-color simple-table-header" style="width:349px">정규 표현식</th><th id="GZHf" class="simple-table-header-color simple-table-header" style="width:349px">설명</th></tr></thead><tbody><tr id="97cf23e7-96fe-4521-9ca4-74ae4e479c8d"><td id="kcW?" class="" style="width:349px">^[0-9]*$</td><td id="GZHf" class="" style="width:349px">숫자</td></tr><tr id="de73fd87-915a-4157-8515-73077de2b33f"><td id="kcW?" class="" style="width:349px">^[a-zA-Z]*$</td><td id="GZHf" class="" style="width:349px">영문자</td></tr><tr id="dde0873b-7ac6-476d-826e-1dc853c85736"><td id="kcW?" class="" style="width:349px">^[가-힣]*$</td><td id="GZHf" class="" style="width:349px">한글</td></tr><tr id="03ef5c51-72cd-4fad-9a19-f69516ed5710"><td id="kcW?" class="" style="width:349px">\\w+@\\w+\\.\\w+(\\.\\w+)?</td><td id="GZHf" class="" style="width:349px">E-Mail</td></tr><tr id="bd78447f-7961-4472-9d06-cedf595f4461"><td id="kcW?" class="" style="width:349px">^\d{2,3}-\d{3,4}-\d{4}$</td><td id="GZHf" class="" style="width:349px">전화번호</td></tr><tr id="b0b632e3-ab3a-4963-8062-63ecf662e158"><td id="kcW?" class="" style="width:349px">^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$</td><td id="GZHf" class="" style="width:349px">휴대전화번호</td></tr><tr id="8a25fe62-56aa-4699-ac66-2549aa797faf"><td id="kcW?" class="" style="width:349px">\d{6} \- [1-4]\d{6}</td><td id="GZHf" class="" style="width:349px">주민등록번호</td></tr><tr id="8fcec33f-067c-43f7-bae1-3fecc9627717"><td id="kcW?" class="" style="width:349px">^\d{3}-\d{2}$</td><td id="GZHf" class="" style="width:349px">우편번호</td></tr></tbody></table><pre id="3ceb7ab2-7f71-48b0-b48e-ba679e2ab5a6" class="code"><code>Line 394 : [21:44:07 Oct 12 Fri] @0x3924004E|JVM| Free Memory: Heap [ 2368340/ 6291456], Native[ 7299824/32505856]
+
+((?:\d{2})(?:\:\d{2}){2}).*?\[\s(\d+).*?\[\s(\d+)
+---------------------------------------------------
+(                   # 첫번째 그룹을 캡쳐
+(?:\d{2})           # 숫자 두 개가 연속으로 나오고
+(?:                 # 캡쳐안되는 그룹으로 묶은,
+\:\d{2}             # :45 같은 : 뒤에 숫자 두 개가 오는 패턴이
+){2}                # 두개 더 붙어서 12:34:56 패턴을 완성
+)                   # 이게 첫번째 그룹
+.*?\[\s             # &quot;[ &quot; 을 만날 때까지 앞으로 나가서
+(\d+)               # 연속된 숫자만 취한다. 이게 두 번째 그룹
+.*?\[\s(\d+)        # 같은 패턴을 한 번 더 써서 세 번째 그룹</code></pre><p id="bd454d2d-3dde-4cd2-aa9d-db8eccf1c553" class="">
+</p><h3 id="8b20e817-0278-4d6a-924a-a8841581a890" class="">정규식의 성능</h3><p id="3ed89e0d-af76-4eaa-b8f7-ffae788e3e8d" class="">정규식 작동 방식은 “백트래킹” 방식으로 왼쪽→오른쪽으로 탐색을 진행하며 패턴과 매칭되지 않으면 재탐색</p><p id="777a27ae-72fe-4450-961d-8b5b23c5bd8b" class="">예시 )</p><p id="9974f4ca-985d-4b8b-acca-23b306f5c558" class="">i<mark class="highlight-yellow_background">nputString = “scaredd”</mark></p><p id="1208f1f9-1d1b-4ae7-8610-bdadfb026558" class=""><mark class="highlight-yellow_background">regex = “sc(ored|ared|oring|)x”</mark></p><p id="0919e408-3e64-4488-b457-21c85f61191d" class=""><mark class="highlight-yellow_background">sc 매칭 → ored 매칭 실패 → ared 매칭 → x매칭 실패 → sc 매칭 실패 </mark></p><p id="9e6221bd-a31a-4ffe-aaae-27d46bee9464" class="">
+</p><h3 id="74cd6c24-30da-4439-8ced-0ae69feacdf1" class="">정규식의 최적화</h3><p id="77fb8c1b-70dd-443b-a7a6-b647aae2d70e" class="">
+</p><ol type="1" id="37048263-bec1-4d25-84ee-879a1a297b32" class="numbered-list" start="1"><li>한번 이상 사용한다면 Pattern.compile 활용</li></ol><pre id="23e309c1-48d3-42eb-b5dc-57636d317542" class="code"><code>{
+	Pattern.compile(&quot;ABC&quot;).matcher(s).matches();
+}
+{
+	s.contain(&quot;ABC&quot;);
+}</code></pre><p id="210ed197-dcf8-4b03-aef4-5eb8e260982d" class="">
+</p><pre id="fc382f99-635d-4b1b-9b78-c41f4990f54f" class="code"><code>private static final Pattern pattern = Pattern.compile(&quot;ABC&quot;);
+
+{
+	pattern.matcher(s).matches();
+}</code></pre><p id="f4f3c537-b7a1-4456-b47e-8a4a5a93d85e" class="">여러번 참조된다면 컴파일을 시켜둠으로 불필요한 성능 낭비 최소화</p><p id="f26af4fa-abf8-4b48-856f-848e8b35ce6c" class="">
+</p><ol type="1" id="6c6dcba7-4a85-4f32-baa2-234a37c61352" class="numbered-list" start="2"><li>(X|Y|Z) 와 같은 alternation regex 사용시 자주 등장하는 패턴을 앞에 배치</li></ol><pre id="f464db0e-5c74-43ff-a493-efb8251b736d" class="code"><code>alternation regex은 매 문자열 마다 모든 경우를 확인하기 때문에 속도가 느린편이다.
+따라서 단순 검사의 경우 String.indexOf()가 더 효과적일 수 있다.
+최적화를 위해 자주 등장하는 패턴을 앞에 배치하면 그나마 속도를 향상 시킬 수 있다.</code></pre><p id="0214aef8-ce9d-45a3-8578-4974be74f724" class="">
+</p><ol type="1" id="fc094c04-2015-45f3-b9fe-483404d2cd15" class="numbered-list" start="3"><li>캡처링 그룹의 사용은 약간의 성는 저하를 가져 온다. (A(BC))</li></ol><pre id="af4dc8e6-3666-4ade-802e-99f5372213a4" class="code"><code>따라서 non-capturing group 을 사용해야 한다 (?:A(?:BC))</code></pre><p id="2e7fddd6-c585-48fa-87dd-3861d9ad1371" class="">
+</p><ol type="1" id="0b10a80a-5b2f-46ac-b3d4-520e78c2082b" class="numbered-list" start="4"><li>Java 엔진에 맞춘 코드를 짠다.</li></ol><pre id="428feabc-e422-441a-8ccb-68c5dbf60498" class="code code-wrap"><code>예를 들어 regex 가 input string 중 반드시 포함된다면 engine 은 그 string 을 먼저 search 한다.또한 전체 expression 이 절대 매칭될 수 없다거나 하면, 해당 string 에 대한 regex 을 실제 check 하지 않고 fail 을 뱉어낸다.
+
+-engine 이 input string 의 length 를 regex 가 기대하는 length 기준으로 체크하는 것이다.예를 들어 \d{100} 이라고 되어있는데, input string 이 100 length 가 안 된다면 engine 은 regex 를 돌려보지 않고 바로 fail 을 뱉는다.
+
+-복잡한 regex 를 사용할 때면 regex engine 이 최적화를 할 수 있는 방향으로 작성하는 것이 좋다.예를 들어 필수 string 을 grouping 이나 alternation 에 숨기지 않는 것이 좋다.그리고 가능하다면 길이를 명시해주는 것이 좋다.</code></pre><p id="7af05646-913d-46c4-81d1-39efba19d1fb" class="">
+</p><ol type="1" id="1410abcf-df2e-4940-b018-97cd48adb509" class="numbered-list" start="5"><li>Optimizing greedy and reluctant quantifiers</li></ol><pre id="53225104-3471-4dfc-8f1d-78b45e4b8c72" class="code"><code>* 나 + 와 같은 greedy quantifier 는 가능한한 많은 char 가 매칭되는 방향으로 match 를 찾는다.
+심지어 최대한 매칭을 한 후 나머지 regex 의 매칭을 할 char 가 없어도 말이다.
+따라서 greedy quantifier 의 경우 backtracking 을 하게 되고, 
+overall match 가 찾아지거나 fail 이 될때까지 backtracking 을 계속한다.
+
+reluctant(or lazy) quantifier 는 가능한한 적은 char 가 매칭되는 방향으로 match 를 찾는다.
+만약 찾고자 하는 char 가 string 의 마지막부에 있다면 greedy quantifier 를 사용하는 것이 좋다. 
+(ex) .*a)만약 찾고자 하는 것이 string 의 초반부에 있다면 lazy quantifier 를 사용하는 것이 좋다. 
+(ex) .*?a)
+
+regex 를 더 정밀하게 쓰는 것이 좋다.
+예를 들어 두개의 a 사이의 char 들을 구하는 것이라면 a(.*)a 대신 a([^a]*)a 를 사용하는 것이 좋다.
+</code></pre><p id="f6195ad2-0821-4700-9ad6-d912d1fccf1e" class="">
+</p><ol type="1" id="7063eca9-2020-494b-96b7-9d18dcbcb05f" class="numbered-list" start="6"><li>Possessive quantifiers and independent grouping</li></ol><pre id="805faf2f-4ebd-4af8-ba0a-e771dea54b49" class="code code-wrap"><code>Possessive quanifier 와 independent grouping 은 regex 를 최적화하는데 아주 유용한 녀석들이다.
+가능한한 이 녀석을 사용하는 것이 엄청난 성능 향상을 가져오곤 한다. 
+( backtracking 하지 않지 않는다. )
+Possessive quantifier 는 추가 + 사인으로 마킹된다. 예를 들어 X?+, X*+, X++ 이다.independent grouping 은 (?&gt;X) 이다. 
+
+두개의 operator 는 모두 backtracking 동작을 disable 시킨다.backtracking 을 disable 시키기 때문에 regex 를 fail 로 몰고가기도 하기 때문에, 정확히 이해하고 써야 한다.</code></pre><p id="3d7a8050-d1b4-43f6-83bf-6b30276d3527" class="">
+</p><ol type="1" id="c755de30-93a0-4fb1-8a36-86f9a422b472" class="numbered-list" start="7"><li>A note about the StackOverflowError</li></ol><pre id="d990d9b0-7a25-40e0-a96d-27d5f606f31d" class="code code-wrap"><code>가끔 Pattern class 가 StackOverflowError 를 던지곤 한다.
+이것은 Java 1.4 부터 있어온 버그이며, won&#x27;t fix 로 결정난 상태이다.
+이 에러는 Pattern 클래스가 regex 를 compile 하여 match 를 수행할 때 실행될 small program 으로 만들 때 발생한다.
+이 small program 은 보통 recursive 하게 발생하며, 너무 많은 recursive 가 발생하면 이 에러가 발생하는 것이다.그리고 이것이 발생하는 경우는 주로 alternation 을 사용한 경우이다.
+만약 이 에러를 마딱뜨린다면, regex 를 다시 쓰거나, 여러개의 sub-expression 을 나누어 실행하도록 해야 한다.sub-expression 을 나누어 실행하는 것은 성능 저하를 일으킬 수 있다.</code></pre><p id="8e63ef9b-872d-474f-bbcd-cbc8f8af9012" class="">
+</p><p id="519404b3-693b-461c-928f-33a19202c308" class="">
+</p><p id="20c9521a-63b6-4205-97e8-7c095408a8f5" class="">
+</p><p id="e6881584-fefd-4906-b3ff-f152d3342cec" class="">
+</p><h3 id="0e884edc-55da-43b8-b4eb-c1ffd6370cdd" class="">참고 사이트</h3><figure id="298e71c5-18f2-4d90-b2bc-9761479113c2"><div class="source"><a href="https://regexper.com/#%5E%5Ba-zA-Z0-9_!%23%24%25%26&#x27;*%2B%2F%3D%3F%60%7B%7C%7D~%5E.-%5D%2B%40%5Ba-zA-Z0-9.-%5D%2B%24">https://regexper.com/#%5E%5Ba-zA-Z0-9_!%23%24%25%26&#x27;*%2B%2F%3D%3F%60%7B%7C%7D~%5E.-%5D%2B%40%5Ba-zA-Z0-9.-%5D%2B%24</a></div><figcaption>정규식 시각화 사이트</figcaption></figure><figure id="43e8d894-9f66-445b-891a-fd4986fea167"><a href="http://regex101.com/" class="block-color-brown_background bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">regex101: build, test, and debug regex</div><div class="bookmark-description">Regular expression tester with syntax highlighting, explanation, cheat sheet for PHP/PCRE, Python, GO, JavaScript, Java, C#/.NET.</div></div><div class="bookmark-href"><img src="https://regex101.com/static/assets/favicon.ico" class="icon bookmark-icon"/>http://regex101.com/</div></div><img src="https://regex101.com/static/assets/card.png" class="bookmark-image"/></a><figcaption>무료 정규식 검증 사이트</figcaption></figure><p id="5aa86786-defd-425c-a6f5-ad9e23a0ab0e" class="">정규식 생성 프로그램은 유료로 존재</p><h3 id="e2812c0f-a19a-4f64-96cc-7028b75fcc47" class="">참조</h3><blockquote id="e79e3123-9ece-4012-a102-d8273436772d" class=""><a href="https://offbyone.tistory.com/400">https://offbyone.tistory.com/400</a>
+<a href="https://aroundck.tistory.com/6506">https://aroundck.tistory.com/6506</a></blockquote><p id="7a4ad1fa-6053-47fc-a51b-ffa935d7cff1" class="">
+</p><p id="a324b8ed-ade1-45c5-9e90-5eb4bb487b3e" class="">
+</p></div></article></body></html>
